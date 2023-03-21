@@ -29,8 +29,6 @@ jobs:
       - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
         run: |
           wget -nv https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh -O guix-install.sh
-          wget -nv https://ci.guix.gnu.org/search/latest/archive?query=spec:tarball+status:success+system:x86_64-linux+guix-binary.tar.xz -O guix-binary-nightly.x86_64-linux.tar.xz
-        shell: bash
         name: Download
       - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
         run: |
@@ -39,7 +37,7 @@ jobs:
         name: Fetch key
       - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
         run: |
-          GUIX_BINARY_FILE_NAME=guix-binary-nightly.x86_64-linux.tar.xz sudo --preserve-env=GUIX_BINARY_FILE_NAME -- bash -c 'yes | bash guix-install.sh'; echo 'ok'
+          sudo -- bash -c 'yes | bash guix-install.sh'; echo 'ok'
         name: Install Guix
 
       - run: |
