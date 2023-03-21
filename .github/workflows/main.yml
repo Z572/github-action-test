@@ -39,8 +39,7 @@ jobs:
         name: Fetch key
       - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
         run: |
-          export GUIX_BINARY_FILE_NAME=guix-binary-nightly.x86_64-linux.tar.xz
-          sudo --preserve-env=GUIX_BINARY_FILE_NAME -- bash -c 'yes | bash guix-install.sh'
+          GUIX_BINARY_FILE_NAME=guix-binary-nightly.x86_64-linux.tar.xz sudo --preserve-env=GUIX_BINARY_FILE_NAME -- bash -c 'yes | bash guix-install.sh'; echo 'ok'
         name: Install Guix
 
       - run: |
