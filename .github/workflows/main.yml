@@ -16,7 +16,6 @@ jobs:
                 /etc/guix
                 /var/guix
                 ~/.cache/guix
-                /root/.config/guix
                 /etc/group
                 /etc/group-
                 /etc/shadow
