@@ -1,0 +1,35 @@
+name: Caching with guix
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache guix
+        id: cache-guix
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-guix
+        with:
+          path: |
+                /gnu
+                /etc/guix
+                /var/guix
+                ~/.cache/guix
+                /root/.cache/guix
+                /root/.config/guix
+                /etc/group
+                /etc/group-
+                /etc/shadow
+                /etc/systemd/system/guix-store.mount
+                /etc/systemd/system/guix-daemon.service
+          key: guix-cache-${{ github.sha }}
+          restore-keys: |
+            guix-cache-
+      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
+        name: install guix
+        uses: PromyLOPh/guix-install-action@v1
+        with:
+          pullAfterInstall: true
+      - name: build
+        run: guix build hello
