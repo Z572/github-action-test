@@ -27,9 +27,30 @@ jobs:
           restore-keys: |
             guix-cache-
       - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
-        name: install guix
-        uses: PromyLOPh/guix-install-action@v1
-        with:
-          pullAfterInstall: true
+        run: |
+        wget -nv https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh -O guix-install.sh
+        wget -nv https://ci.guix.gnu.org/search/latest/archive?query=spec:tarball+status:success+system:x86_64-linux+guix-binary.tar.xz -O guix-binary-nightly.x86_64-linux.tar.xz
+      shell: bash
+      name: Download
+      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
+        run: |
+          wget "https://savannah.gnu.org/people/viewgpg.php?user_id=127547" -qO - | sudo gpg --import -
+          wget "https://savannah.gnu.org/people/viewgpg.php?user_id=15145" -qO - | sudo gpg --import -
+        shell: bash
+        name: Fetch key
+      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
+        run: |
+          export GUIX_BINARY_FILE_NAME=guix-binary-nightly.x86_64-linux.tar.xz
+          sudo --preserve-env=GUIX_BINARY_FILE_NAME -- bash -c 'yes | bash guix-install.sh'
+        shell: bash
+        name: Install Guix
+      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
+        run: sudo -i guix archive --generate-key
+        shell: bash
+        name: Generate keys
+
+      - run: |
+          sudo systemctl daemon-reload
+          sudo systemctl restart guix-daemon
       - name: build
         run: guix build hello
