@@ -17,25 +17,21 @@ jobs:
                 /var/guix
                 ~/.cache/guix
                 ~root/.cache/guix
+                /etc/group
+                /etc/group-
+                /etc/shadow
+                /etc/systemd/system/guix-store.mount
+                /etc/systemd/system/guix-daemon.service
           key: guix-cache-${{ github.sha }}
           restore-keys: |
             guix-cache-
-      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
-        run: |
-          wget -nv https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh -O guix-install.sh
-        name: Download
-      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
-        run: |
-          wget "https://savannah.gnu.org/people/viewgpg.php?user_id=127547" -qO - | sudo gpg --import -
-          wget "https://savannah.gnu.org/people/viewgpg.php?user_id=15145" -qO - | sudo gpg --import -
-        name: Fetch key
-      - if: ${{ steps.cache-guix.outputs.cache-hit != 'true' }}
-        run: |
-          sudo -- bash -c 'yes | bash guix-install.sh'; echo 'ok'
-        name: Install Guix
+      - name: Install Guix
+        if: steps.cache-guix.outputs.cache-hit != 'true'
+        id: install-guix
+        uses: PromyLOPh/guix-install-action@v1
 
       - run: |
           sudo systemctl daemon-reload
-          sudo systemctl restart guix-daemon
+          sudo systemctl enable --now guix-daemon
       - name: build
-        run: guix build cuirass
+        run: guix build hello
