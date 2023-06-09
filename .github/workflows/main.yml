@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Cache guix
-        id: cache-guix
+        id: cache
         uses: divnix/nix-cache-action@v3.0.11-nix
         env:
           cache-name: cache-guix
@@ -26,10 +26,8 @@ jobs:
           restore-keys: |
             guix-cache-
       - name: Install Guix
-        if: steps.cache-guix.outputs.cache-hit != 'true'
-        id: install-guix
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: PromyLOPh/guix-install-action@v1
-
       - run: |
           sudo systemctl daemon-reload
           sudo systemctl enable --now guix-daemon
