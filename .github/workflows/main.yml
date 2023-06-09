@@ -5,13 +5,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - name: wrap-tar
-        run: |
-             sudo mv /usr/bin/tar /usr/bin/.tar-real
-             sudo echo 'sudo /usr/bin/.tar-real' > /usr/bin/tar
       - name: Cache guix
         id: cache-guix
-        uses: actions/cache@v3
+        uses: divnix/nix-cache-action@v3.0.11-nix
         env:
           cache-name: cache-guix
         with:
@@ -20,13 +16,7 @@ jobs:
                 /etc/guix
                 /var/guix
                 ~/.cache/guix
-                /etc/group
-                /etc/group-
-                /etc/shadow
-                /etc/systemd/system/guix-daemon.service.wants/gnu-store.mount
-                /etc/systemd/system/guix-daemon.service.wants/gnu-daemon.mount
-                /etc/systemd/system/guix-store.mount
-                /etc/systemd/system/guix-daemon.service
+                ~root/.cache/guix
           key: guix-cache-${{ github.sha }}
           restore-keys: |
             guix-cache-
